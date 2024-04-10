@@ -11,145 +11,26 @@ public class Test2 {
         // Step 2: Determine Time Zone (TZ)
         String timeZone = "WIB"; // Example time zone
         int timeZoneValue = determineTimeZone(timeZone);
+        int year = LocalDate.now().getYear();
+        double monthsPassed = LocalDate.now().getDayOfMonth();
+        double estimatedYear = year + monthsPassed/12;
 
-        // Step 3: Calculate the Hijri Year (Y) on the date when the eclipse is predicted to occur.
-        int monthsPassed = LocalDate.now().getDayOfMonth(); // Example months passed
-        int year = (Y - 1420.75) * 12 - 0.5; // Example year
-        int monthPrediction = 4; // Example month prediction
-        YearMonth hijriDate = YearMonth.of(year, monthPrediction);
-        double estimatedYear = calculateEstimatedYear(year, monthsPassed);
-        double Y = estimatedYear;
-        // Step 4: Calculate the value of K
-        double k = calculateK(estimatedYear);
+        double k = (estimatedYear - 1420.75) * 12 - 0.5;
+        double t = k / 1236.85;
+        double jde = 2451550.09766 + 29.530588861 * k + 0.00015437 * Math.pow(t,2) - 0.00000015 * Math.pow(t,3) + 0.00000000073 * Math.pow(t,4);
+        double sunMeanAnomaly = 2.5534 + 29.1053567 * k - 0.0000014 * Math.pow(t,2) - 0.00000011 * Math.pow(t,3);
+        double moonMeanAnomaly =  201.5643 + 385.81693528 * k + 0.0107582 * Math.pow(t,2) + 0.00001238 * Math.pow(t,3) - 0.000000058 * Math.pow(t,4);
+        double astronomicalLongitude = 124.7746 - 1.56375588 * k + 0.0020672 * Math.pow(t,2) + 0.00000215 * Math.pow(t,3);
+        double argumentLatitude = 160.7108 + 390.67050284 * k - 0.0016118 * Math.pow(t,2) - 0.00000227 * Math.pow(t,3) + 0.000000011 * Math.pow(t,4) - 0.026665 * Math.sin(astronomicalLongitude);
+        double imkan = Math.abs(Math.sin(Math.toRadians(argumentLatitude)));
+        String imkanYN = determineEclipseProbability(argumentLatitude);
 
-        // Step 5: Calculate the value of T
-        double t = calculateT(k);
 
-        // Step 6: Calculate Julian Day Ephemeris (JDE)
-        double jde = calculateJDE(k, t);
 
-        // Step 7: Calculate Sun’s mean anomaly (M)
-        double sunMeanAnomaly = calculateSunMeanAnomaly(k, t);
-
-        // Step 8: Calculate the Moon’s mean anomaly (M’)
-        double moonMeanAnomaly = calculateMoonMeanAnomaly(k, t);
-
-        // Step 9: Calculate the astronomical longitude of the Moon from the ascending node (Ω)
-        double astronomicalLongitude = calculateAstronomicalLongitude(k, t);
-
-        // Step 10: Calculate the argument value for the latitude of the Moon (F)
-        double argumentLatitude = calculateArgumentLatitude(k, t, astronomicalLongitude);
-
-        // Step 11: Determine the probability of an eclipse (Imkan)
-        String imkan = determineEclipseProbability(argumentLatitude);
-
-        // Step 12: Calculate the eccentricity value of the Earth's orbit around the Sun (E)
-        double eccentricity = calculateEccentricity(t);
-
-        // Step 13: Calculate the value of A
-        double a = calculateA(k, t);
-
-        // Step 14: Calculate corrections to find out the middle of the eclipse (C)
-        double c = calculateCorrections();
-
-        // Step 15: Calculate JDE TD (Julian Day Ephemeris date) and JDE WD (Julian date adjusted to the time of the area)
-        double jdeTD = calculateJDE_TD(jde, a, c);
-        double jdeWD = calculateJDE_WD(jdeTD, timeZoneValue);
-
-        // Step 16: Calculate Greenwich Mean Time (GMT) and the time of the area (WD)
-        double gmt = calculateGMT(jdeTD);
-        double wd = calculateWD(jdeWD);
-
-        // Step 17: Calculate the value of Z
-        int z = calculateZ(jdeWD);
-
-        // Step 18: Calculate the value of α
-        int alpha = calculateAlpha(z);
-
-        // Step 19: Calculate the value of A
-        int a2 = calculateA(z, alpha);
-
-        // Step 20: Calculate the value of B
-        int b = calculateB(a2);
-
-        // Step 21: Calculate the value of C
-        int cValue = calculateC(b);
-
-        // Step 22: Calculate the value of D
-        int d = calculateD(cValue);
-
-        // Step 23: Calculate the value of E
-        int eValue = calculateE(b, d);
-
-        // Step 24: Determine the date of the lunar eclipse (TGL)
-        int tgl = calculateDateLunarEclipse(b, d, eValue);
-
-        // Step 25: Determine the month of the lunar eclipse (BLN)
-        int bln = calculateMonthLunarEclipse(eValue);
-
-        // Step 26: Determine the year of the lunar eclipse (THN)
-        int thn = calculateYearLunarEclipse(eValue, cValue);
-
-        // Step 27: Determine the days when the eclipse occurs (HA)
-        double ha = calculateHA(z);
-
-        // Step 28: Determine the pasaran when the eclipse occurs (Pa)
-        double pa = calculatePa(z);
-
-        // Step 29: Calculate the value of P
-        double p = calculateP(sunMeanAnomaly, moonMeanAnomaly, argumentLatitude, eccentricity, t);
-
-        // Step 30: Calculate the latitude of the month (Q)
-        double q = calculateQ(sunMeanAnomaly, moonMeanAnomaly, argumentLatitude, eccentricity);
-
-        // Step 31: Calculate the value of the magnitude of the month (U)
-        double u = calculateU(sunMeanAnomaly, moonMeanAnomaly);
-
-        // Step 32: Calculate the value of W
-        double w = calculateW(argumentLatitude);
-
-        // Step 33: Calculate the value of Y
-        double y = calculateY(p, q, w);
-
-        // Step 34: Calculate the value of h
-        double h = calculateH(u);
-
-        // Step 35: Calculate the value of p
-        double pValue = calculatePValue(u);
-
-        // Step 36: Calculate the value of t
-        double tValue = calculateTValue(u);
-
-        // Step 37: Calculate the value of n
-        double n = calculateN(moonMeanAnomaly);
-
-        // Step 38: Calculate the Magnitude of the Eclipse
-        double magnitude = calculateMagnitude(h, pValue, tValue);
-
-        // Step 39: Calculate the semi duration of the penumbra phase (TP)
-        double tp = calculateTP(h, y, n);
-
-        // Step 40: Calculate the semi duration of the partial umbra phase (TU)
-        double tu = calculateTU(pValue, y, n);
-
-        // Step 41: Calculate the semi duration of the total umbra phase (TT)
-        double tt = calculateTT(tValue, y, n);
-
-        // Step 42: Determine the type of eclipse (TE)
-        String eclipseType = determineEclipseType(magnitude, tp, tu, tt);
-
-        // Step 43: Calculate the Duration of the Penumbra Phase (DP)
-        double dp = calculateDP(tp);
-
-        // Step 44: Calculate the Duration of the Umbra Phase (DU)
-        double du = calculateDU(tu);
-
-        // Step 45: Calculate the Duration of the Total Umbra Phase (DT)
-        double dt = calculateDT(tt);
 
         // Output the results
         System.out.println("Year: " + year);
-        System.out.println("Month Prediction: " + monthPrediction);
+        System.out.println("Month Prediction: "); /*+ monthPrediction);*/
         System.out.println("Time Zone: " + timeZone);
         System.out.println("Estimated Year: " + estimatedYear);
         System.out.println("K: " + k);
