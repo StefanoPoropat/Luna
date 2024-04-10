@@ -1,5 +1,4 @@
 import java.time.LocalDate;
-import java.time.YearMonth;
 
 public class Test2 {
 
@@ -24,59 +23,75 @@ public class Test2 {
         double argumentLatitude = 160.7108 + 390.67050284 * k - 0.0016118 * Math.pow(t,2) - 0.00000227 * Math.pow(t,3) + 0.000000011 * Math.pow(t,4) - 0.026665 * Math.sin(astronomicalLongitude);
         double imkan = Math.abs(Math.sin(Math.toRadians(argumentLatitude)));
         String imkanYN = determineEclipseProbability(argumentLatitude);
+        double eccentricity = 1 - 0.002561 * t - 0.0000074 * Math.pow(t,2);
+        double a = 0.0003 * Math.sin(299.77 + 0.107408 * k - 0.009173 * Math.pow(t,2));
+        double c = calculateCorrections();
+        double jdeTD = jde + a + c + 0.5;
+        double jdeWD = jdeTD + (double) timeZoneValue /24;
+        double gmt = (jdeTD - (int)(jdeWD))*24;
+        double wd = (jdeWD - (int)(jdeTD))*24;
+        int z = (int)(jdeWD);
+        int alpha = (int)((z- 1867216.25) / 36524.25);
+        int a2 = calculateA2(z, alpha);
+        double b = a2 + 1524;
+        int cValue = (int)((b-122.1)/365.25);
+        int d = (int)(365.25*cValue);
+        int eValue = (int)((b-d)/30.6001);
+        double tgl = b-d-(int)(30.6001*eValue);
+        int bln = calculateMonthLunarEclipse(eValue);
+        double thn = calculateYearLunarEclipse(bln, cValue);
+        double ha = Math.ceilMod(z+2, 7);
+        double pa = Math.ceilMod(z+1, 5);
+        double p1 = 0.2070 * eValue * Math.sin(sunMeanAnomaly);
+        double p2 = 0.0024 * eValue * Math.sin(2*sunMeanAnomaly);
+        double p3 = -0.0392 * Math.sin(moonMeanAnomaly);
+        double p4 = 0.0116 * Math.sin(2*moonMeanAnomaly);
+        double p5 = -0.0073 * eValue * Math.sin(moonMeanAnomaly+sunMeanAnomaly);
+        double p6 = 0.0067 * eValue * Math.sin(moonMeanAnomaly-sunMeanAnomaly);
+        double p7 = 0.0118 * Math.sin(2*argumentLatitude);
+        double p = p1 + p2 + p3 + p4 + p5 + p6 + p7;
+        double q1 = -0.0048 * eValue * Math.cos(sunMeanAnomaly);
+        double q2 = 0.0020 * eValue * Math.cos(2*sunMeanAnomaly);
+        double q3 = -0.3299 * moonMeanAnomaly;
+        double q4 = -0.0060 * eValue * (moonMeanAnomaly+sunMeanAnomaly);
+        double q5 = +0.0041 * eValue * (moonMeanAnomaly-sunMeanAnomaly);
+        double q = 5.2207 + q1 + q2 + q3 +q4 + q5;
+        double u1 = 0.0046 * eValue * Math.cos(sunMeanAnomaly);
+        double u2 = -0.0182 * Math.cos(moonMeanAnomaly);
+        double u3 =  0.0004 * Math.cos(2*moonMeanAnomaly);
+        double u4 = -0.0005 * Math.cos(sunMeanAnomaly+moonMeanAnomaly);
+        double u = 0.0059 + u1 + u2 + u3 + u4;
+        double w = Math.abs(Math.cos(Math.toRadians(173.033505)));
+        double y = (p*Math.cos(argumentLatitude) + q*Math.sin(argumentLatitude) * (1-0.0048*w));
+        double h = 1.5573 + u;
+        double pValue = 1.0128 - u;
+        double tValue = 0.4678 - u;
+        double n = 0.5458+0.04*Math.cos(Math.toRadians(moonMeanAnomaly));
+        double mp =  1.9506;
+        double mu = 1.0058;
+        double tp = Math.sqrt(Math.pow(h,2)-Math.pow(0.4794,2))/n;
+        double tu = Math.sqrt(Math.pow(p,2)-Math.pow(0.4794,2))/n;
+        double tt = Math.sqrt(Math.pow(t,2)-Math.pow(0.4794,2))/n;
+        double magnitude = calculateMagnitude(h, pValue, tValue);
+        String te = determineEclipseType(magnitude, tp, tu, tt);
+        double dp = tp * 2;
+        double du = tu * 2;
+        double dt = tt * 2;
+
+
+
+
 
 
 
 
         // Output the results
-        System.out.println("Year: " + year);
-        System.out.println("Month Prediction: "); /*+ monthPrediction);*/
-        System.out.println("Time Zone: " + timeZone);
-        System.out.println("Estimated Year: " + estimatedYear);
-        System.out.println("K: " + k);
-        System.out.println("T: " + t);
-        System.out.println("JDE: " + jde);
-        System.out.println("Sun's Mean Anomaly: " + sunMeanAnomaly);
-        System.out.println("Moon's Mean Anomaly: " + moonMeanAnomaly);
-        System.out.println("Astronomical Longitude: " + astronomicalLongitude);
-        System.out.println("Argument Latitude: " + argumentLatitude);
-        System.out.println("Imkan: " + imkan);
-        System.out.println("Eccentricity: " + eccentricity);
-        System.out.println("A: " + a);
-        System.out.println("C: " + c);
-        System.out.println("JDE TD: " + jdeTD);
-        System.out.println("JDE WD: " + jdeWD);
-        System.out.println("GMT: " + gmt);
-        System.out.println("WD: " + wd);
-        System.out.println("Z: " + z);
-        System.out.println("Alpha: " + alpha);
-        System.out.println("A2: " + a2);
-        System.out.println("B: " + b);
-        System.out.println("C Value: " + cValue);
-        System.out.println("D: " + d);
-        System.out.println("E Value: " + eValue);
-        System.out.println("TGL: " + tgl);
-        System.out.println("BLN: " + bln);
-        System.out.println("THN: " + thn);
-        System.out.println("HA: " + ha);
-        System.out.println("Pa: " + pa);
-        System.out.println("P: " + p);
-        System.out.println("Q: " + q);
-        System.out.println("U: " + u);
-        System.out.println("W: " + w);
-        System.out.println("Y: " + y);
-        System.out.println("H: " + h);
-        System.out.println("P Value: " + pValue);
-        System.out.println("T Value: " + tValue);
-        System.out.println("N: " + n);
-        System.out.println("Magnitude: " + magnitude);
-        System.out.println("TP: " + tp);
-        System.out.println("TU: " + tu);
-        System.out.println("TT: " + tt);
-        System.out.println("Eclipse Type: " + eclipseType);
-        System.out.println("DP: " + dp);
-        System.out.println("DU: " + du);
-        System.out.println("DT: " + dt);
+        System.out.println("Curent year: " + year);
+        System.out.println("Time zone: " + timeZone);
+        System.out.println("Time zone value: " + timeZoneValue);
+        System.out.println("Estimated year: " + (int)estimatedYear);
+        System.out.println("Estimated month: " + (int)bln);
+        System.out.println("Estimated day: " + (int)tgl);
     }
 
     // Step 2: Determine Time Zone (TZ)
@@ -93,46 +108,6 @@ public class Test2 {
         }
     }
 
-    // Step 3: Calculating the Hijri Year (Y) on the date when the eclipse is predicted to occur
-    public static double calculateEstimatedYear(int year, int monthsPassed) {
-        return year + (double) monthsPassed / 12;
-    }
-
-    // Step 4: Calculate the value of K
-    public static double calculateK(double estimatedYear) {
-        return (estimatedYear - 1420.75) * 12 - 0.5;
-    }
-
-    // Step 5: Calculate the value of T
-    public static double calculateT(double k) {
-        return k / 1236.85;
-    }
-
-    // Step 6: Calculate Julian Day Ephemeris (JDE)
-    public static double calculateJDE(double k, double t) {
-        return 2451550.09766 + 29.530588861 * k + 0.00015437 * Math.pow(t, 2) - 0.00000015 * Math.pow(t, 3) + 0.00000000073 * Math.pow(t, 4);
-    }
-
-    // Step 7: Calculate Sun’s mean anomaly (M)
-    public static double calculateSunMeanAnomaly(double k, double t) {
-        return 2.5534 + 29.1053567 * k - 0.0000014 * Math.pow(t, 2) - 0.00000011 * Math.pow(t, 3);
-    }
-
-    // Step 8: Calculate the Moon’s mean anomaly (M’)
-    public static double calculateMoonMeanAnomaly(double k, double t) {
-        return 201.5643 + 385.81693528 * k + 0.0107582 * Math.pow(t, 2) + 0.00001238 * Math.pow(t, 3) - 0.000000058 * Math.pow(t, 4);
-    }
-
-    // Step 9: Calculate the astronomical longitude of the Moon from the ascending node (omega/Ω)
-    public static double calculateAstronomicalLongitude(double k, double t) {
-        return 124.7746 - 1.56375588 * k + 0.0020672 * Math.pow(t, 2) + 0.00000215 * Math.pow(t, 3);
-    }
-
-    // Step 10: Calculate the argument value for the latitude of the Moon (F)
-    public static double calculateArgumentLatitude(double k, double t, double astronomicalLongitude) {
-        double sinOmega = Math.sin(Math.toRadians(astronomicalLongitude));
-        return 160.7108 + 390.67050284 * k - 0.0016118 * Math.pow(t, 2) - 0.00000227 * Math.pow(t, 3) + 0.000000011 * Math.pow(t, 4) - 0.026665 * sinOmega;
-    }
 
     // Step 11: Determine the probability of an eclipse
     public static String determineEclipseProbability(double argumentLatitude) {
@@ -143,15 +118,7 @@ public class Test2 {
         }
     }
 
-    // Step 12: Calculate the eccentricity value of the Earth's orbit around the Sun (E)
-    public static double calculateEccentricity(double t) {
-        return 1 - 0.002561 * t - 0.0000074 * Math.pow(t, 2);
-    }
 
-    // Step 13: Calculate the value of A
-    public static double calculateA(double k, double t) {
-        return 0.0003 * Math.sin(Math.toRadians(299.77 + 0.107408 * k - 0.009173 * Math.pow(t, 2)));
-    }
 
     // Step 14: Calculate corrections to find out the middle of the eclipse (C)
     public static double calculateCorrections() {
@@ -185,151 +152,32 @@ public class Test2 {
             return  C;
     }
 
-    // Step 15: Calculate JDE TD (Julian Day Ephemeris date) and JDE WD (Julian date adjusted to the time of the area)
-    public static double calculateJDE_TD(double jde, double a, double c) {
-        return jde + a + c;
-    }
-
-    // Step 16: Calculate Greenwich Mean Time (GMT) and the time of the area (WD)
-    public static double calculateGMT(double jdeTD) {
-        return jdeTD - 2451545.0;
-    }
-
-    // Step 17: Calculate the value of Z
-    public static int calculateZ(double jdeWD) {
-        return (int) Math.floor(jdeWD);
-    }
-
-    // Step 18: Calculate the value of alpha
-    public static int calculateAlpha(int z) {
-        return z % 7;
-    }
-
     // Step 19: Calculate the value of A
-    public static int calculateA(int z, int alpha) {
+    public static int calculateA2(int z, int alpha) {
         return (z - alpha) / 7;
-    }
-
-    // Step 20: Calculate the value of B
-    public static int calculateB(int a2) {
-        return a2 + 1;
-    }
-
-    // Step 21: Calculate the value of C
-    public static int calculateC(int b) {
-        return b + 354;
-    }
-
-    // Step 22: Calculate the value of D
-    public static int calculateD(int cValue) {
-        return (int) (cValue * 1.25);
-    }
-
-    // Step 23: Calculate the value of E
-    public static int calculateE(int b, int d) {
-        return (11 * b + 14) - d;
-    }
-
-    // Step 24: Determine the date of the lunar eclipse (TGL)
-    public static int calculateDateLunarEclipse(int b, int d, int eValue) {
-        if (eValue > 30) {
-            return eValue - 30;
-        } else {
-            return eValue;
-        }
     }
 
     // Step 25: Determine the month of the lunar eclipse (BLN)
     public static int calculateMonthLunarEclipse(int eValue) {
-        if (eValue > 30) {
-            return 12;
+        if (eValue >=14) {
+            return eValue-13;
         } else {
-            return 11;
+            return eValue-1;
         }
     }
 
     // Step 26: Determine the year of the lunar eclipse (THN)
-    public static int calculateYearLunarEclipse(int eValue, int cValue) {
-        if (eValue > 30) {
-            return cValue + 1;
+    public static int calculateYearLunarEclipse(int bln, int cValue) {
+        if (bln<=2) {
+            return cValue - 4715;
         } else {
-            return cValue;
+            return cValue - 4716;
         }
-    }
-
-    // Step 27: Determine the days when the eclipse occurs (HA)
-    public static double calculateHA(int z) {
-        return 8.0855 + 0.00025 * z;
-    }
-
-    // Step 28: Determine the pasaran when the eclipse occurs (Pa)
-    public static double calculatePa(int z) {
-        return 24.284 + 0.000206 * z;
-    }
-
-    // Step 29: Calculate the value of P
-    public static double calculateP(double sunMeanAnomaly, double moonMeanAnomaly, double argumentLatitude, double eccentricity, double t) {
-        return 1 - 0.0048 * Math.cos(Math.toRadians(sunMeanAnomaly)) - 0.0007 * Math.cos(Math.toRadians(2 * moonMeanAnomaly)) + 0.0003 * Math.cos(Math.toRadians(2 * argumentLatitude)) - 0.0004 * Math.cos(Math.toRadians(3 * argumentLatitude)) - 0.0003 * Math.cos(Math.toRadians(sunMeanAnomaly + (double) 44 / 3)) - 0.0006 * Math.cos(Math.toRadians(sunMeanAnomaly + (double) 88 / 3)) + eccentricity * (0.0028 - 0.0004 * Math.cos(Math.toRadians(sunMeanAnomaly)) - 0.0004 * Math.cos(Math.toRadians(2 * moonMeanAnomaly)));
-    }
-
-    // Step 30: Calculate the latitude of the month (Q)
-    public static double calculateQ(double sunMeanAnomaly, double moonMeanAnomaly, double argumentLatitude, double eccentricity) {
-        return 0.207 - 0.001 * Math.cos(Math.toRadians(sunMeanAnomaly)) + 0.002 * Math.cos(Math.toRadians(2 * moonMeanAnomaly)) - 0.002 * Math.cos(Math.toRadians(2 * argumentLatitude)) + 0.002 * Math.cos(Math.toRadians(3 * argumentLatitude)) + eccentricity * (0.0034 - 0.0006 * Math.cos(Math.toRadians(sunMeanAnomaly)) - 0.0006 * Math.cos(Math.toRadians(2 * moonMeanAnomaly)));
-    }
-
-    // Step 31: Calculate the value of the magnitude of the month (U)
-    public static double calculateU(double sunMeanAnomaly, double moonMeanAnomaly) {
-        return 0.0034 - 0.0006 * Math.cos(Math.toRadians(sunMeanAnomaly)) - 0.0006 * Math.cos(Math.toRadians(2 * moonMeanAnomaly));
-    }
-
-    // Step 32: Calculate the value of W
-    public static double calculateW(double argumentLatitude) {
-        return 0.0034 - 0.0006 * Math.cos(Math.toRadians(2 * argumentLatitude));
-    }
-
-    // Step 33: Calculate the value of Y
-    public static double calculateY(double p, double q, double w) {
-        return 0.1428 * Math.sin(Math.toRadians(p)) - 0.0325 * Math.sin(Math.toRadians(q)) + 0.0095 * Math.sin(Math.toRadians(2 * w));
-    }
-
-    // Step 34: Calculate the value of h
-    public static double calculateH(double u) {
-        return Math.abs(u - 1);
-    }
-
-    // Step 35: Calculate the value of p
-    public static double calculatePValue(double u) {
-        return 1 - Math.abs(u);
-    }
-
-    // Step 36: Calculate the value of t
-    public static double calculateTValue(double u) {
-        return 1 - Math.abs(u);
-    }
-
-    // Step 37: Calculate the value of n
-    public static double calculateN(double moonMeanAnomaly) {
-        return 0.0047 + 0.0005 * Math.cos(Math.toRadians(moonMeanAnomaly));
     }
 
     // Step 38: Calculate the Magnitude of the Eclipse
     public static double calculateMagnitude(double h, double pValue, double tValue) {
         return h * pValue * tValue;
-    }
-
-    // Step 39: Calculate the semi duration of the penumbra phase (TP)
-    public static double calculateTP(double h, double y, double n) {
-        return (2 * h - y) / (2 * n);
-    }
-
-    // Step 40: Calculate the semi duration of the partial umbra phase (TU)
-    public static double calculateTU(double pValue, double y, double n) {
-        return (pValue - y) / (2 * n);
-    }
-
-    // Step 41: Calculate the semi duration of the total umbra phase (TT)
-    public static double calculateTT(double tValue, double y, double n) {
-        return (2 * tValue - y) / (2 * n);
     }
 
     // Step 42: Determine the type of eclipse (TE)
@@ -351,27 +199,5 @@ public class Test2 {
         } else {
             return "Total";
         }
-    }
-
-    // Step 43: Calculate the Duration of the Penumbra Phase (DP)
-    public static double calculateDP(double tp) {
-        return 2 * tp;
-    }
-
-    // Step 44: Calculate the Duration of the Umbra Phase (DU)
-    public static double calculateDU(double tu) {
-        return 2 * tu;
-    }
-
-    // Step 45: Calculate the Duration of the Total Umbra Phase (DT)
-    public static double calculateDT(double tt) {
-        return 2 * tt;
-    }
-    public static double calculateJDE_WD(double jdeTD, int timeZone) {
-        return jdeTD + timeZone / 24.0;
-    }
-    // Step 16: Calculate the time of the area (WD)
-    public static double calculateWD(double jdeWD) {
-        return (jdeWD - Math.floor(jdeWD)) * 24;
     }
 }
