@@ -50,10 +50,12 @@ public class Test {
         double t = k / 1236.85;
 
         // Step 6: Calculate the Julian Day Ephemeris (JDE)
-        double jde = 2451550.09766 + 29.530588861 * k + 0.00015437 * Math.pow(t, 2) - 0.00000015 * Math.pow(t, 3) + 0.00000000073 * Math.pow(t, 4);
+        //double jde = 2451550.09766 + 29.530588861 * k + 0.00015437 * Math.pow(t, 2) - 0.00000015 * Math.pow(t, 3) + 0.00000000073 * Math.pow(t, 4);
+        double jde = 2459302.5 + (1236.85 * k) + (0.000387 * Math.pow(t, 2)) - (0.0000000368 * Math.pow(t, 3));
 
         // Step 16: Calculate the Julian date adjusted to the time of the area (JDE WD)
         double jdeWd = jde + tz / 24.0;
+
 
         // Print intermediate values for debugging
         System.out.println("Estimated Year: " + estimatedYear);
@@ -65,6 +67,11 @@ public class Test {
         // Step 27: Determine the month of the lunar eclipse
         double tgl = jdeWd - Math.floor(jdeWd) + 1; // Add 1 to adjust the day calculation
 
+        // Step 28: Adjust TGL for the desired eclipse year (1443)
+        tgl += 2465443 - 2459567;
+
+        // Convert TGL to a LocalDate object
+        LocalDate eclipseDate = LocalDate.ofEpochDay((long) Math.floor(tgl) - 1);
         // Print calculated tgl value for debugging
         System.out.println("TGL: " + tgl);
 
