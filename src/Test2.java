@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.time.YearMonth;
 
 public class Test2 {
@@ -5,18 +6,19 @@ public class Test2 {
     public static void main(String[] args) {
         // Step 1: Determine the approximate year (Y) and the month prediction (M)
         // of the lunar eclipse in the Hijri calendar.
-        int year = 2024; // Example year
-        int monthPrediction = 4; // Example month prediction
-        YearMonth hijriDate = YearMonth.of(year, monthPrediction);
+
 
         // Step 2: Determine Time Zone (TZ)
         String timeZone = "WIB"; // Example time zone
         int timeZoneValue = determineTimeZone(timeZone);
 
         // Step 3: Calculate the Hijri Year (Y) on the date when the eclipse is predicted to occur.
-        int monthsPassed = 3; // Example months passed
+        int monthsPassed = LocalDate.now().getDayOfMonth(); // Example months passed
+        int year = (Y - 1420.75) * 12 - 0.5; // Example year
+        int monthPrediction = 4; // Example month prediction
+        YearMonth hijriDate = YearMonth.of(year, monthPrediction);
         double estimatedYear = calculateEstimatedYear(year, monthsPassed);
-
+        double Y = estimatedYear;
         // Step 4: Calculate the value of K
         double k = calculateK(estimatedYear);
 
